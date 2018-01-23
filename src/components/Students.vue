@@ -21,7 +21,7 @@
       </template>
     </b-table>
     {{modalInfo}}
-    <information-modal :information-data.sync="modalInfo"></information-modal>
+    <information-modal :information="modalInfo" @update-profile="updateProfile"></information-modal>
   </b-container>
 </template>
 
@@ -67,7 +67,7 @@ export default {
         { key: 'ly', sortable: true },
         { key: 'actions', label: 'Actions' }
       ],
-      sortBy: null,
+      sortBy: 'id',
       sortDesc: false,
       modalInfo: {}
     }
@@ -75,11 +75,20 @@ export default {
   methods: {
     info: function (item, index) {
       this.modalInfo = item
-      this.$root.$emit('bv::show::modal', 'modalInfoID', 'showModal')
+      this.$root.$emit('bv::show::modal', 'modalInfoID')
     },
     remove: function (item, index) {
     },
     follow: function (item, index) {
+    },
+    updateProfile: function (item) {
+      for (var i = 0; i < this.students.length; i++) {
+        if (this.students[i].id === item.id) {
+          this.$set(this.students, i, item)
+          break
+        }
+      }
+      console.log(this.students)
     }
   },
   components: {

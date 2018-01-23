@@ -1,6 +1,5 @@
 <template lang="html">
-  <b-modal id="modalInfoID" :title="msg" ok-only>
-    {{modalData}}
+  <b-modal id="modalInfoID" :title="msg" @ok="handleOk">
     <b-row class="my-1">
       <b-col sm="2"><label for="input-small">Name:</label></b-col>
       <b-col sm="10">
@@ -16,53 +15,73 @@
     <b-row class="my-1">
       <b-col sm="2"><label for="input-small">Toan:</label></b-col>
       <b-col sm="10">
-        <b-form-input id="input-small" size="sm" type="text" v-model="modalData.toan" disabled></b-form-input>
+        <b-form-input id="input-small" size="sm" type="number" v-model.number="modalData.toan"></b-form-input>
       </b-col>
     </b-row>
     <b-row class="my-1">
       <b-col sm="2"><label for="input-small">Ly:</label></b-col>
       <b-col sm="10">
-        <b-form-input id="input-small" size="sm" type="text" v-model="modalData.ly" disabled></b-form-input>
+        <b-form-input id="input-small" size="sm" type="number" v-model.number="modalData.ly"></b-form-input>
       </b-col>
     </b-row>
     <b-row class="my-1">
       <b-col sm="2"><label for="input-small">Hoa:</label></b-col>
       <b-col sm="10">
-        <b-form-input id="input-small" size="sm" type="text" v-model="modalData.hoa" disabled></b-form-input>
+        <b-form-input id="input-small" size="sm" type="number" v-model.number="modalData.hoa"></b-form-input>
       </b-col>
     </b-row>
-    <!-- <b-row class="my-1">
+    <b-row class="my-1">
       <b-col sm="2"><label for="input-small">Sum:</label></b-col>
       <b-col sm="10">
-        <b-form id="input-small" size="sm" type="number">{{diemtrungbinh}}</b-form>
+        <b-form id="input-small" size="sm" type="number">{{diemtrungbinh | round(2)}}</b-form>
       </b-col>
-    </b-row> -->
+    </b-row>
   </b-modal>
 </template>
 
 <script>
 export default {
   name: 'InformationModal',
-  props: ['informationData'],
+  props: ['information'],
   data: function () {
     return {
       msg: 'Information',
-      modalData: this.informationData
+      modalData: this.information
     }
   },
-  beforeUpdate () {
-    this.modalData = Object.assign({}, this.informationData)
+  watch: {
+    information: function () {
+      this.modalData = this.deepCopy(this.information)
+    }
+  },
+  methods: {
+    deepCopy: function (obj) {
+      return JSON.parse(JSON.stringify(obj))
+    },
+    handleOk: function () {
+      this.$emit('update-profile', this.modalData)
+    }
+  },
+  computed: {
+    diemtrungbinh: function () {
+      console.log(this.modalData)
+      return (this.modalData.toan + this.modalData.ly + this.modalData.hoa) / 3
+    }
+  },
+  filters: {
+    round: function (value, decimals) {
+      if (!value) {
+        value = 0
+      }
+
+      if (!decimals) {
+        decimals = 0
+      }
+
+      value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals)
+      return value
+    }
   }
-  // methods: {
-  //   deepCopy: function (obj) {
-  //     return JSON.parse(JSON.stringify(obj))
-  //   }
-  // },
-  // computed: {
-  //   diemtrungbinh () {
-  //     return this.informationData
-  //   }
-  // }
 }
 </script>
 
